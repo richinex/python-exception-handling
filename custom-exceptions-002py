@@ -1,0 +1,61 @@
+import logging
+
+# Set up logging configuration
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Custom exception classes
+class CustomError(Exception):
+    """Base class for other exceptions"""
+    pass
+
+class SpecificError(CustomError):
+    """Raised for a specific custom error"""
+    pass
+
+def risky_function(filename):
+    """Function that reads from a file and raises a specific error for invalid content"""
+    try:
+        with open(filename, 'r') as file:
+            content = file.read()
+            if "error" in content:
+                raise SpecificError(f"Invalid content found in file: {filename}")
+            logging.info(f"File content: {content}")
+    except FileNotFoundError as e:
+        logging.error(f"File not found: {filename}")
+        raise CustomError(f"File not found: {filename}") from e
+
+def main():
+    """Main function to demonstrate error handling"""
+    filename = "example.txt"  # Ensure this file exists or change the path accordingly
+    try:
+        logging.info(f"Starting the risky function with file: {filename}")
+        risky_function(filename)
+    except SpecificError as e:
+        logging.error(f"Caught a specific error: {e}")
+        handle_specific_error(e)
+    except CustomError as e:
+        logging.error(f"Caught a custom error: {e}")
+        handle_custom_error(e)
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+        handle_unexpected_error(e)
+    finally:
+        logging.info("Execution finished")
+
+def handle_specific_error(e):
+    """Handle SpecificError"""
+    print(f"Handling SpecificError: {e}")
+    # Here you can add code to correct the specific error, like cleaning up invalid data
+
+def handle_custom_error(e):
+    """Handle CustomError"""
+    print(f"Handling CustomError: {e}")
+    # Here you can add code to handle the custom error, like notifying the user or retrying
+
+def handle_unexpected_error(e):
+    """Handle unexpected errors"""
+    print(f"Handling unexpected error: {e}")
+    # Here you can add code to handle unexpected errors, like logging more details
+
+if __name__ == "__main__":
+    main()
